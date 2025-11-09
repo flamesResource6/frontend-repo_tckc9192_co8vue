@@ -1,28 +1,44 @@
-import { useState } from 'react'
+import React, { useRef, useState } from 'react';
+import Header from './components/Header';
+import CVForm from './components/CVForm';
+import CVPreview from './components/CVPreview';
+import ActionsBar from './components/ActionsBar';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState({});
+  const previewRef = useRef(null);
+
+  const handleDownload = async () => {
+    // Fallback: trigger print dialog – users can save as PDF from browser
+    window.print();
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+      <Header />
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="md:w-1/2">
+            <CVForm onChange={setData} />
+          </div>
+          <div className="md:w-1/2 space-y-3">
+            <ActionsBar onDownload={handleDownload} />
+            <div ref={previewRef} className="print:bg-white">
+              <CVPreview data={data} />
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+
+      <style>{`
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          header, .btn, .btn-ghost, .no-print { display: none !important; }
+          main { padding: 0 !important; }
+        }
+      `}</style>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
